@@ -2,7 +2,7 @@
 
 ## 1. Identificação
 
-- **Nome do aluno:** [SEU NOME COMPLETO AQUI]
+- **Nome do aluno:** [Jose Augusto Wennek Fiuza]
 - **Nome do projeto:** Ultra Legacy
 
 ## 2. Descrição
