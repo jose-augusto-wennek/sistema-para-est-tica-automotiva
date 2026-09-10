@@ -1,28 +1,23 @@
-# Especificação Técnica (Architecture)
+# Especificação Técnica (Architecture) - Ultra Legacy
 
-## 1. Visão Geral
+Este documento apresenta de forma simples a estrutura técnica do sistema **Ultra Legacy**, incluindo os principais dados, relacionamentos e uso do JSON Server.
 
-Este documento descreve **como** o sistema da Ultra Legacy será estruturado do ponto de vista de dados, cobrindo as entidades necessárias para suportar o cadastro de clientes, veículos, serviços e agendamentos, além da integração com uma API externa de consulta de placas veiculares.
+## 1. Modelo de Dados
 
-## 2. Modelo de Dados (Diagrama Mermaid)
+O sistema possui clientes, veículos, serviços e agendamentos.
 
 ```mermaid
 erDiagram
     CLIENTE ||--o{ VEICULO : possui
     CLIENTE ||--o{ AGENDAMENTO : solicita
-    VEICULO ||--o{ AGENDAMENTO : eh_alvo_de
-    VEICULO ||--o{ HISTORICO_SERVICO : possui
-    SERVICO ||--o{ AGENDAMENTO : referenciado_em
-    SERVICO ||--o{ HISTORICO_SERVICO : referenciado_em
-    AGENDAMENTO ||--o| HISTORICO_SERVICO : gera
-    ADMINISTRADOR ||--o{ AGENDAMENTO : gerencia
-    CLIENTE ||--o{ MENSAGEM_CONTATO : envia
+    VEICULO ||--o{ AGENDAMENTO : utilizado_em
+    SERVICO ||--o{ AGENDAMENTO : escolhido_em
 
     CLIENTE {
         string id PK
         string nome
         string email
-        string senha_hash
+        string senha
         string telefone
     }
 
@@ -51,63 +46,92 @@ erDiagram
         string data_hora
         string status
     }
-
-    HISTORICO_SERVICO {
-        string id PK
-        string veiculo_id FK
-        string servico_id FK
-        string agendamento_id FK
-        string data_conclusao
-        string observacoes
-    }
-
-    ADMINISTRADOR {
-        string id PK
-        string nome
-        string email
-        string senha_hash
-    }
-
-    MENSAGEM_CONTATO {
-        string id PK
-        string cliente_id FK
-        string nome
-        string email
-        string mensagem
-        string data_envio
-    }
 ```
 
-## 3. Entidades e Relações (resumo)
+## 2. Dicionário de Dados
 
-- **CLIENTE**: usuário final que possui uma ou mais entradas em VEICULO e pode solicitar AGENDAMENTOs.
-- **VEICULO**: pertence a um CLIENTE; os campos `marca`, `modelo`, `ano` e `cor` são preenchidos automaticamente a partir da consulta da `placa` na API externa, mas ficam salvos no banco para não depender de nova chamada a cada visualização.
-- **SERVICO**: catálogo de serviços oferecidos pela estética (lavagem, polimento, vitrificação, etc.), com preço.
-- **AGENDAMENTO**: liga um CLIENTE + VEICULO + SERVICO em uma data/hora, com um `status` (ex: pendente, confirmado, concluído, cancelado).
-- **HISTORICO_SERVICO**: registro definitivo de um serviço já realizado em um veículo, geralmente criado a partir de um AGENDAMENTO concluído.
-- **ADMINISTRADOR**: usuário interno que gerencia agendamentos, clientes e veículos.
-- **MENSAGEM_CONTATO**: mensagens enviadas pelo formulário de contato do site institucional.
+* **Cliente:** armazena os dados do cliente que utiliza o sistema.
 
-## 4. Integração com API de Placas Veiculares
+  * `id`: identificador do cliente.
+  * `nome`: nome do cliente.
+  * `email`: e-mail utilizado no sistema.
+  * `senha`: senha de acesso.
+  * `telefone`: telefone do cliente.
 
-- Ao cadastrar um veículo, o usuário informa apenas a **placa**.
-- O sistema faz uma requisição a uma API pública/paga de consulta veicular (ex: serviços que consultam a base do Detran/Denatran a partir da placa) para obter `marca`, `modelo`, `ano` e `cor`.
-- O retorno da API é usado para **preencher automaticamente** os campos de VEICULO antes de salvar no banco.
-- Deve-se tratar o caso de a API não encontrar a placa (placa inválida, veículo não localizado) ou de a API estar indisponível — nesses casos, o Cliente/Administrador poderá preencher os dados manualmente.
+* **Veículo:** armazena os veículos cadastrados pelo cliente.
 
+  * `id`: identificador do veículo.
+  * `cliente_id`: identifica o cliente dono do veículo.
+  * `placa`: placa do veículo.
+  * `marca`: marca do veículo.
+  * `modelo`: modelo do veículo.
+  * `ano`: ano do veículo.
+  * `cor`: cor do veículo.
 
-## 5. Persistência de Dados (Fake API)
+* **Serviço:** representa os serviços oferecidos pela Ultra Legacy.
 
-Enquanto não há um backend real, as entidades **CLIENTE**, **VEICULO**, **SERVICO** e **AGENDAMENTO** serão persistidas usando o **JSON Server** como API fake, rodando localmente a partir de um arquivo `db.json` com uma coleção para cada entidade (ex.: `/clientes`, `/veiculos`, `/servicos`, `/agendamentos`).
+  * `id`: identificador do serviço.
+  * `nome`: nome do serviço.
+  * `descricao`: descrição do serviço.
+  * `preco`: preço do serviço.
 
-- Cadastro de cliente e de veículo → `POST` para o JSON Server (grava o formulário).
-- Listagem de veículos, serviços e agendamentos → `GET` no JSON Server (exibe os dados na página).
-- Consulta de placa → `GET` para a **API pública real** de placas veiculares (dado externo, não fica no JSON Server).
+* **Agendamento:** registra o serviço escolhido pelo cliente.
 
-## 6. Uso de Web Storage (localStorage)
+  * `id`: identificador do agendamento.
+  * `cliente_id`: cliente responsável pelo agendamento.
+  * `veiculo_id`: veículo que receberá o serviço.
+  * `servico_id`: serviço escolhido.
+  * `data_hora`: data e horário agendados.
+  * `status`: situação do agendamento.
 
-Para melhorar a experiência sem depender do backend, alguns dados de baixo risco ficam salvos no `localStorage` do navegador, por exemplo:
+## 3. Rotas da API
 
-- Última placa pesquisada pelo usuário (para preencher automaticamente o campo na próxima visita).
-- Preferências de exibição (ex.: tema claro/escuro, se implementado).
-- Rascunho do formulário de agendamento, evitando perda de dados caso a página seja recarregada antes do envio.
+O projeto utiliza o **JSON Server** como uma API simulada para armazenar e consultar os dados.
+
+Principais rotas:
+
+* `GET /clientes` - Lista os clientes.
+* `POST /clientes` - Cadastra um cliente.
+* `GET /veiculos` - Lista os veículos.
+* `POST /veiculos` - Cadastra um veículo.
+* `GET /servicos` - Lista os serviços.
+* `GET /agendamentos` - Lista os agendamentos.
+* `POST /agendamentos` - Cadastra um novo agendamento.
+
+## 4. Estrutura do Banco de Dados
+
+Os dados serão armazenados no arquivo `db.json`.
+
+Exemplo:
+
+```json
+{
+    "clientes": [],
+    "veiculos": [],
+    "servicos": [],
+    "agendamentos": []
+}
+```
+
+## 5. Consulta de Placa
+
+Ao cadastrar um veículo, o usuário informa a placa.
+
+O sistema poderá consultar uma API externa para buscar informações como:
+
+* marca;
+* modelo;
+* ano;
+* cor.
+
+Essas informações podem ser utilizadas para preencher o cadastro do veículo automaticamente.
+
+## 6. LocalStorage
+
+O `localStorage` poderá ser utilizado para guardar informações simples no navegador, como:
+
+* última placa pesquisada;
+* preferências de exibição;
+* dados temporários de um formulário.
+
+O objetivo é melhorar a experiência do usuário sem substituir o armazenamento principal feito pelo JSON Server.
