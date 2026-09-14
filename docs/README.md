@@ -35,6 +35,8 @@ Sistema web para a estética automotiva **Ultra Legacy**, com cadastro de client
 - [ ] ID 20 - Utiliza jQuery para manipulação do DOM e interatividade (eventos, animações, manipulação de elementos).
 - [ ] ID 21 - Integra e configura um plugin jQuery relevante (ex.: jQuery Mask Plugin) ou outra biblioteca de funções.
 
+- [ ] Stitch IA utilizada para gerar os protótipos de telas do site
+- [ ] link do protótipo: https://stitch.withgoogle.com/projects/17088217055424468959 
 ### RA5 - Requisições assíncronas (API fake e APIs públicas)
 - [ ] ID 22 - Realiza requisições assíncronas para uma API fake (ex.: JSON Server) para persistir dados de um formulário.
 - [ ] ID 23 - Realiza requisições assíncronas para uma API fake para exibir dados na página.
