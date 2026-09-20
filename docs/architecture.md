@@ -1,42 +1,42 @@
-# Especificação Técnica (Architecture) - Ultra Legacy
+# 🛠️ Especificação Técnica (Tech Spec) - Ultra Legacy
 
-Este documento apresenta de forma simples a estrutura técnica do sistema **Ultra Legacy**, incluindo o modelo de dados, API e armazenamento.
+Este documento detalha a arquitetura técnica, o modelo de dados e os contratos de API necessários para o funcionamento do sistema de estética automotiva **Ultra Legacy**.
 
-## 1. Modelo de Dados
+## 1. Modelo de Dados (Diagrama ER)
 
-O sistema possui clientes, veículos, serviços e agendamentos.
+Abaixo está o Diagrama Entidade-Relacionamento (DER) que representa a estrutura do banco de dados simulado (`db.json`) e como as informações se conectam.
 
 ```mermaid
 erDiagram
-    CLIENTE ||--o{ VEICULO : possui
-    CLIENTE ||--o{ AGENDAMENTO : realiza
-    VEICULO ||--o{ AGENDAMENTO : recebe
-    SERVICO ||--o{ AGENDAMENTO : inclui
+    CLIENTE ||--o{ VEICULO : "possui"
+    CLIENTE ||--o{ AGENDAMENTO : "realiza"
+    VEICULO ||--o{ AGENDAMENTO : "recebe"
+    SERVICO ||--o{ AGENDAMENTO : "inclui"
 
     CLIENTE {
-        string id PK
+        string id PK "Identificador do cliente"
         string nome
         string email
     }
 
     VEICULO {
-        string id PK
-        string cliente_id FK
+        string id PK "Identificador do veículo"
+        string cliente_id FK "Vínculo com o Cliente"
         string placa
         string modelo
     }
 
     SERVICO {
-        string id PK
+        string id PK "Identificador do serviço"
         string nome
         float preco
     }
 
     AGENDAMENTO {
-        string id PK
-        string cliente_id FK
-        string veiculo_id FK
-        string servico_id FK
+        string id PK "Identificador do agendamento"
+        string cliente_id FK "Vínculo com o Cliente"
+        string veiculo_id FK "Vínculo com o Veículo"
+        string servico_id FK "Vínculo com o Serviço"
         string data
         string status
     }
@@ -44,49 +44,53 @@ erDiagram
 
 ## 2. Dicionário de Dados
 
-### Cliente
+Breve explicação das principais entidades do sistema:
 
-* `id`: identificador do cliente.
-* `nome`: nome do cliente.
-* `email`: e-mail.
+* **Clientes:** Responsável por armazenar os dados dos clientes cadastrados no sistema.
 
-### Veículo
+  * `id`: Identificador único do cliente.
+  * `nome`: Nome do cliente.
+  * `email`: E-mail do cliente.
 
-* `id`: identificador do veículo.
-* `cliente_id`: identifica o dono do veículo.
-* `placa`: placa do veículo.
-* `modelo`: modelo do veículo.
+* **Veículos:** Armazena os veículos cadastrados e seu vínculo com o respectivo cliente.
 
-### Serviço
+  * `id`: Identificador único do veículo.
+  * `cliente_id`: Chave estrangeira que identifica o proprietário do veículo.
+  * `placa`: Placa do veículo.
+  * `modelo`: Modelo do veículo.
 
-* `id`: identificador do serviço.
-* `nome`: nome do serviço.
-* `preco`: valor do serviço.
+* **Serviços:** Armazena os serviços oferecidos pela estética automotiva.
 
-### Agendamento
+  * `id`: Identificador único do serviço.
+  * `nome`: Nome do serviço.
+  * `preco`: Valor do serviço.
 
-* `id`: identificador do agendamento.
-* `cliente_id`: cliente responsável.
-* `veiculo_id`: veículo do agendamento.
-* `servico_id`: serviço escolhido.
-* `data`: data do agendamento.
-* `status`: situação do agendamento.
+* **Agendamentos:** Registra os serviços agendados para cada veículo e cliente.
 
-## 3. Rotas da API
+  * `id`: Identificador único do agendamento.
+  * `cliente_id`: Chave estrangeira que identifica o cliente responsável pelo agendamento.
+  * `veiculo_id`: Chave estrangeira que identifica o veículo relacionado ao agendamento.
+  * `servico_id`: Chave estrangeira que identifica o serviço escolhido.
+  * `data`: Data do agendamento.
+  * `status`: Situação atual do agendamento.
 
-O projeto utiliza o **JSON Server** como uma API simulada para armazenar e consultar os dados.
+## 3. Rotas da API (JSON Server)
 
-* `GET /clientes` - Lista os clientes.
-* `POST /clientes` - Cadastra um cliente.
-* `GET /veiculos` - Lista os veículos.
-* `POST /veiculos` - Cadastra um veículo.
-* `GET /servicos` - Lista os serviços.
-* `GET /agendamentos` - Lista os agendamentos.
-* `POST /agendamentos` - Cadastra um agendamento.
+A aplicação utiliza o **JSON Server** como uma API local simulada para armazenar, cadastrar e consultar os dados do sistema.
 
-## 4. Estrutura do Banco de Dados
+Principais endpoints:
 
-Os dados serão armazenados no arquivo `db.json`.
+* `GET /clientes` - Retorna a lista de clientes.
+* `POST /clientes` - Cadastra um novo cliente.
+* `GET /veiculos` - Retorna a lista de veículos.
+* `POST /veiculos` - Cadastra um novo veículo.
+* `GET /servicos` - Retorna a lista de serviços.
+* `GET /agendamentos` - Retorna a lista de agendamentos.
+* `POST /agendamentos` - Cadastra um novo agendamento.
+
+## 4. Estrutura do Banco de Dados (db.json)
+
+Esta é a representação da estrutura do banco de dados simulado. O arquivo `db.json` será utilizado pelo JSON Server para inicializar e armazenar os dados da aplicação.
 
 ```json
 {
@@ -99,16 +103,23 @@ Os dados serão armazenados no arquivo `db.json`.
 
 ## 5. Consulta de Placa
 
-Ao cadastrar um veículo, o usuário informa a placa.
+Ao cadastrar um veículo, o usuário informa a placa do automóvel.
 
-O sistema poderá consultar uma API externa para obter informações do veículo, como marca, modelo e ano.
+O sistema poderá realizar uma requisição para uma API pública de consulta de placas, obtendo informações disponíveis sobre o veículo, como:
+
+* marca;
+* modelo;
+* ano;
+* outras informações disponibilizadas pela API.
+
+A consulta deverá tratar possíveis erros de comunicação ou ausência de dados retornados pela API.
 
 ## 6. LocalStorage
 
-O `localStorage` poderá ser utilizado para armazenar informações simples no navegador, como:
+O `localStorage` poderá ser utilizado como mecanismo auxiliar para armazenar informações simples no navegador, como:
 
 * última placa pesquisada;
 * preferências do usuário;
-* dados temporários de formulário.
+* dados temporários de formulários.
 
-O `localStorage` será utilizado apenas como apoio, enquanto o **JSON Server** será responsável pelo armazenamento principal dos dados.
+O `localStorage` será utilizado como apoio à aplicação, enquanto o **JSON Server** será responsável pelo armazenamento principal dos dados.
