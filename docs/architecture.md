@@ -1,145 +1,107 @@
-# 🛠️ Especificação Técnica (Tech Spec) - Ultra Legacy
+# 🛠️ Especificação Técnica — Ultra Legacy
 
-Este documento detalha a arquitetura técnica, o modelo de dados e os contratos de API necessários para o funcionamento do sistema de estética automotiva **Ultra Legacy**.
-
-## 1. Modelo de Dados (Diagrama ER)
-
-Abaixo está o Diagrama Entidade-Relacionamento (DER) que representa a estrutura do banco de dados simulado (`db.json`) e como as informações se conectam.
+## 1. Modelo de Dados
 
 ```mermaid
 erDiagram
-    CLIENTE ||--o{ VEICULO : "possui"
-    CLIENTE ||--o{ AGENDAMENTO : "realiza"
-    VEICULO ||--o{ AGENDAMENTO : "recebe"
-    SERVICO ||--o{ AGENDAMENTO : "inclui"
+    CLIENTE ||--o{ VEICULO : possui
+    CLIENTE ||--o{ AGENDAMENTO : realiza
+    VEICULO ||--o{ AGENDAMENTO : recebe
+    SERVICO ||--o{ AGENDAMENTO : inclui
 
     CLIENTE {
-        string id PK "Identificador do cliente"
+        int id PK
         string nome
         string email
     }
 
     VEICULO {
-        string id PK "Identificador do veículo"
-        string cliente_id FK "Vínculo com o Cliente"
+        int id PK
+        int cliente_id FK
         string placa
         string modelo
     }
 
     SERVICO {
-        string id PK "Identificador do serviço"
+        int id PK
         string nome
-        float preco
+        decimal preco
     }
 
     AGENDAMENTO {
-        string id PK "Identificador do agendamento"
-        string cliente_id FK "Vínculo com o Cliente"
-        string veiculo_id FK "Vínculo com o Veículo"
-        string servico_id FK "Vínculo com o Serviço"
+        int id PK
+        int cliente_id FK
+        int veiculo_id FK
+        int servico_id FK
         string data
         string status
     }
 ```
 
-## 2. Dicionário de Dados
+## 2. Tecnologias
 
-Breve explicação das principais entidades do sistema:
+* Bootstrap **5.3.3**
+* Bootstrap Icons **1.11.3**
+* Node.js / NPM
+* JSON Server
+* FIPE API **v1**
+* LocalStorage
 
-* **Clientes:** Responsável por armazenar os dados dos clientes cadastrados no sistema.
+## 3. JSON Server
 
-  * `id`: Identificador único do cliente.
-  * `nome`: Nome do cliente.
-  * `email`: E-mail do cliente.
+Principais rotas:
 
-* **Veículos:** Armazena os veículos cadastrados e seu vínculo com o respectivo cliente.
+```text
+GET/POST /clientes
+GET/POST /veiculos
+GET /servicos
+GET/POST /agendamentos
+```
 
-  * `id`: Identificador único do veículo.
-  * `cliente_id`: Chave estrangeira que identifica o proprietário do veículo.
-  * `placa`: Placa do veículo.
-  * `modelo`: Modelo do veículo.
-
-* **Serviços:** Armazena os serviços oferecidos pela estética automotiva.
-
-  * `id`: Identificador único do serviço.
-  * `nome`: Nome do serviço.
-  * `preco`: Valor do serviço.
-
-* **Agendamentos:** Registra os serviços agendados para cada veículo e cliente.
-
-  * `id`: Identificador único do agendamento.
-  * `cliente_id`: Chave estrangeira que identifica o cliente responsável pelo agendamento.
-  * `veiculo_id`: Chave estrangeira que identifica o veículo relacionado ao agendamento.
-  * `servico_id`: Chave estrangeira que identifica o serviço escolhido.
-  * `data`: Data do agendamento.
-  * `status`: Situação atual do agendamento.
-
-## 3. Rotas da API (JSON Server)
-
-A aplicação utiliza o **JSON Server** como uma API local simulada para armazenar, cadastrar e consultar os dados do sistema.
-
-Principais endpoints:
-
-* `GET /clientes` - Retorna a lista de clientes.
-* `POST /clientes` - Cadastra um novo cliente.
-* `GET /veiculos` - Retorna a lista de veículos.
-* `POST /veiculos` - Cadastra um novo veículo.
-* `GET /servicos` - Retorna a lista de serviços.
-* `GET /agendamentos` - Retorna a lista de agendamentos.
-* `POST /agendamentos` - Cadastra um novo agendamento.
-
-## 4. Estrutura do Banco de Dados (db.json)
-
-Esta é a representação da estrutura do banco de dados simulado. O arquivo `db.json` será utilizado pelo JSON Server para inicializar e armazenar os dados da aplicação.
+Estrutura do `db.json`:
 
 ```json
 {
-    "clientes": [],
-    "veiculos": [],
-    "servicos": [],
-    "agendamentos": []
+  "clientes": [],
+  "veiculos": [],
+  "servicos": [],
+  "agendamentos": []
 }
 ```
 
-## 5. Integração com a FIPE API
+## 4. FIPE API
 
-O sistema utiliza a **FIPE API** como API pública para consulta de informações e valores de referência de veículos.
+A FIPE API será utilizada para complementar os dados dos veículos.
 
-A API permite consultar veículos de acordo com uma sequência de informações, como tipo de veículo, marca, modelo e ano.
+Fluxo:
 
-O fluxo de consulta utilizado pela aplicação será:
+```text
+Tipo → Marca → Modelo → Ano → Dados do veículo
+```
 
-1. Selecionar o tipo de veículo.
-2. Consultar e selecionar a marca.
-3. Consultar e selecionar o modelo.
-4. Consultar os anos disponíveis para o modelo.
-5. Consultar os dados finais do veículo e seu valor de referência.
-
-### Principais endpoints
-
-* `GET /carros/marcas` - Lista as marcas de carros.
-* `GET /carros/marcas/{marcaId}/modelos` - Lista os modelos de uma marca.
-* `GET /carros/marcas/{marcaId}/modelos/{modeloId}/anos` - Lista os anos disponíveis para um modelo.
-* `GET /carros/marcas/{marcaId}/modelos/{modeloId}/anos/{anoId}` - Retorna os dados e o valor de referência do veículo.
-
-### URL base
+Base:
 
 ```text
 https://parallelum.com.br/fipe/api/v1
 ```
 
-As requisições para a FIPE API serão realizadas de forma assíncrona utilizando JavaScript.
+Principais endpoints:
 
-A aplicação deverá tratar possíveis erros durante a comunicação com a API, como falha na requisição, ausência de dados ou indisponibilidade do serviço.
+```text
+GET /carros/marcas
+GET /carros/marcas/{marcaId}/modelos
+GET /carros/marcas/{marcaId}/modelos/{modeloId}/anos
+GET /carros/marcas/{marcaId}/modelos/{modeloId}/anos/{anoId}
+```
 
-A consulta da FIPE API será utilizada como recurso complementar ao cadastro de veículos do sistema **Ultra Legacy**.
+A placa será armazenada no sistema, mas não será utilizada para consulta direta na FIPE.
 
-## 6. LocalStorage
+## 5. LocalStorage
 
-O `localStorage` poderá ser utilizado como mecanismo auxiliar para armazenar informações simples no navegador, como:
+Será utilizado para dados temporários, como:
 
-* última consulta de veículo realizada;
-* preferências do usuário;
-* dados temporários de formulários.
+* Última consulta;
+* Preferências;
+* Rascunhos de formulários.
 
-O `localStorage` será utilizado como apoio à aplicação, enquanto o **JSON Server** será responsável pelo armazenamento principal dos dados.
+O JSON Server será o armazenamento principal durante o desenvolvimento.
