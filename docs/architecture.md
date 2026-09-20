@@ -101,24 +101,44 @@ Esta é a representação da estrutura do banco de dados simulado. O arquivo `db
 }
 ```
 
-## 5. Consulta de Placa
+## 5. Integração com a FIPE API
 
-Ao cadastrar um veículo, o usuário informa a placa do automóvel.
+O sistema utiliza a **FIPE API** como API pública para consulta de informações e valores de referência de veículos.
 
-O sistema poderá realizar uma requisição para uma API pública de consulta de placas, obtendo informações disponíveis sobre o veículo, como:
+A API permite consultar veículos de acordo com uma sequência de informações, como tipo de veículo, marca, modelo e ano.
 
-* marca;
-* modelo;
-* ano;
-* outras informações disponibilizadas pela API.
+O fluxo de consulta utilizado pela aplicação será:
 
-A consulta deverá tratar possíveis erros de comunicação ou ausência de dados retornados pela API.
+1. Selecionar o tipo de veículo.
+2. Consultar e selecionar a marca.
+3. Consultar e selecionar o modelo.
+4. Consultar os anos disponíveis para o modelo.
+5. Consultar os dados finais do veículo e seu valor de referência.
+
+### Principais endpoints
+
+* `GET /carros/marcas` - Lista as marcas de carros.
+* `GET /carros/marcas/{marcaId}/modelos` - Lista os modelos de uma marca.
+* `GET /carros/marcas/{marcaId}/modelos/{modeloId}/anos` - Lista os anos disponíveis para um modelo.
+* `GET /carros/marcas/{marcaId}/modelos/{modeloId}/anos/{anoId}` - Retorna os dados e o valor de referência do veículo.
+
+### URL base
+
+```text
+https://parallelum.com.br/fipe/api/v1
+```
+
+As requisições para a FIPE API serão realizadas de forma assíncrona utilizando JavaScript.
+
+A aplicação deverá tratar possíveis erros durante a comunicação com a API, como falha na requisição, ausência de dados ou indisponibilidade do serviço.
+
+A consulta da FIPE API será utilizada como recurso complementar ao cadastro de veículos do sistema **Ultra Legacy**.
 
 ## 6. LocalStorage
 
 O `localStorage` poderá ser utilizado como mecanismo auxiliar para armazenar informações simples no navegador, como:
 
-* última placa pesquisada;
+* última consulta de veículo realizada;
 * preferências do usuário;
 * dados temporários de formulários.
 
