@@ -6,8 +6,8 @@ Sistema web para gerenciamento de uma empresa de estética automotiva, com cadas
 
 ## 📚 Documentação
 
-* [PRD](docs/prd.md)
-* [Architecture](docs/architecture.md)
+* [PRD](.docs/prd.md)
+* [Architecture](.docs/architecture.md)
 
 ## 🎨 Protótipo
 
