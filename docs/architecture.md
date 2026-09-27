@@ -1,13 +1,10 @@
-Markdown
-# 🛠️ Especificação Técnica (Tech Spec) - Ultra Legacy
-
+🛠️ Especificação Técnica (Tech Spec) - Ultra Legacy
 Este documento detalha a arquitetura técnica, o modelo de dados e os contratos de API (via JSON Server) necessários para o funcionamento do sistema da estética automotiva Ultra Legacy.
 
-## 1. Modelo de Dados (Diagrama ER)
+1. Modelo de Dados (Diagrama ER)
+Abaixo está o Diagrama Entidade-Relacionamento (DER) que representa a estrutura do nosso "banco de dados" (db.json) e como as informações se conectam.
 
-Abaixo está o Diagrama Entidade-Relacionamento (DER) que representa a estrutura do nosso "banco de dados" (`db.json`) e como as informações se conectam.
-
-```mermaid
+Snippet de código
 erDiagram
 CLIENTE ||--o{ AGENDAMENTO : "realiza (e ganha desconto)"
 CLIENTE {
