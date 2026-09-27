@@ -1,66 +1,125 @@
-🛠️ Especificação Técnica (Tech Spec) - Ultra Legacy
-Este documento detalha a arquitetura técnica, o modelo de dados e os contratos de API (via JSON Server) necessários para o funcionamento do sistema da estética automotiva Ultra Legacy.
+# Architecture — Ultra Legacy
 
-1. Modelo de Dados (Diagrama ER)
-Abaixo está o Diagrama Entidade-Relacionamento (DER) que representa a estrutura do nosso "banco de dados" (db.json) e como as informações se conectam.
+## 1. Visão Geral
 
-Snippet de código
+O sistema da **Ultra Legacy** utiliza uma arquitetura simples baseada em **HTML, CSS, JavaScript e JSON Server**.
+
+O JSON Server funciona como uma API local para armazenar clientes e agendamentos no arquivo `db.json`.
+
+---
+
+## 2. Modelo de Dados
+
+O sistema possui duas entidades principais:
+
+* **Cliente:** armazena os dados de cadastro e acesso.
+* **Agendamento:** armazena os serviços agendados pelos clientes.
+
+### Diagrama ER
+
+```mermaid
 erDiagram
-CLIENTE ||--o{ AGENDAMENTO : "realiza (e ganha desconto)"
-CLIENTE {
-string id PK "Gerado automaticamente"
-string nome
-string cpf "Usado para o login"
-string telefone
-string senha
-}
-AGENDAMENTO {
-string id PK
-string clienteId FK "Vínculo com o Cliente"
-string servico "Ex: 'Polimento Técnico' ou 'Lavagem Detalhada'"
-float valorBruto
-float desconto "Calculado automaticamente (10%)"
-float valorFinal
-string data "Formato ISO (YYYY-MM-DD)"
-}
-2. Dicionário de Dados
-Breve explicação das tabelas principais:
+    CLIENTE ||--o{ AGENDAMENTO : realiza
 
-Clientes: Responsável por armazenar os dados de autenticação e contato do usuário.
+    CLIENTE {
+        string id PK
+        string nome
+        string cpf
+        string telefone
+        string senha
+    }
 
-id: Identificador único gerado pelo JSON Server (String ou Hash).
+    AGENDAMENTO {
+        string id PK
+        string clienteId FK
+        string servico
+        float valorBruto
+        float desconto
+        float valorFinal
+        string data
+    }
+```
 
-cpf: Chave de acesso do usuário. Em um cenário real seria único, mas para o MVP não há trava estrita no banco, apenas validação no front-end.
+---
 
-telefone: Telefone do cliente para confirmação do serviço.
+## 3. Dicionário de Dados
 
-Agendamentos: Registra o histórico de serviços contratados. Regra de Negócio Crítica: Todo agendamento feito pelo cliente deve calcular, via JavaScript, um valor secundário automático do tipo DESCONTO, reduzindo o valor final cobrado.
+### Cliente
 
-clienteId: Chave estrangeira que vincula o agendamento ao cliente (padrão de nomenclatura exigido pelo JSON Server para rotas aninhadas).
+| Campo      | Descrição                                       |
+| ---------- | ----------------------------------------------- |
+| `id`       | Identificador único do cliente.                 |
+| `nome`     | Nome completo do cliente.                       |
+| `cpf`      | CPF utilizado para acesso ao sistema.           |
+| `telefone` | Telefone para contato e confirmação do serviço. |
+| `senha`    | Senha utilizada no acesso.                      |
 
-servico: Nome do serviço automotivo selecionado.
+### Agendamento
 
-valorBruto: Valor original do serviço.
+| Campo        | Descrição                                                   |
+| ------------ | ----------------------------------------------------------- |
+| `id`         | Identificador único do agendamento.                         |
+| `clienteId`  | Identifica o cliente responsável pelo agendamento.          |
+| `servico`    | Serviço automotivo escolhido.                               |
+| `valorBruto` | Valor original do serviço.                                  |
+| `desconto`   | Valor do desconto de fidelidade, calculado automaticamente. |
+| `valorFinal` | Valor final após a aplicação do desconto.                   |
+| `data`       | Data do agendamento no formato `YYYY-MM-DD`.                |
 
-desconto: Valor deduzido referente ao desconto fidelidade.
+### Regra de negócio
 
-valorFinal: Valor líquido que o cliente irá pagar no final.
+Todo agendamento realizado pelo cliente possui um **desconto automático de 10%**.
 
-3. Rotas da API (JSON Server)
-A aplicação consome a API local simulada pelo JSON Server. Abaixo os principais endpoints:
+O JavaScript calcula o desconto e o valor final:
 
-GET /clientes - Retorna a lista de clientes.
+```text
+desconto = valorBruto × 10%
+valorFinal = valorBruto - desconto
+```
 
-POST /clientes - Cadastra um novo cliente.
+---
 
-GET /agendamentos?clienteId=1 - Retorna os agendamentos de um cliente específico.
+## 4. API — JSON Server
 
-POST /agendamentos - Cadastra um novo agendamento de serviço.
+A aplicação utiliza o **JSON Server** para simular uma API REST local.
 
-4. Estrutura do Banco de Dados (db.json)
-Esta é a representação em formato JSON do banco de dados simulado. Esta estrutura serve de contexto para ferramentas de IA e para o JSON Server inicializar a API Fake.
+### Clientes
 
-JSON
+```http
+GET /clientes
+```
+
+Retorna todos os clientes.
+
+```http
+POST /clientes
+```
+
+Cadastra um novo cliente.
+
+### Agendamentos
+
+```http
+GET /agendamentos?clienteId=1
+```
+
+Retorna os agendamentos de um cliente específico.
+
+```http
+POST /agendamentos
+```
+
+Cadastra um novo agendamento.
+
+---
+
+## 5. Banco de Dados
+
+Os dados são armazenados no arquivo `db.json`.
+
+Exemplo:
+
+```json
 {
   "clientes": [
     {
@@ -92,3 +151,28 @@ JSON
     }
   ]
 }
+```
+
+---
+
+## 6. Fluxo da Aplicação
+
+O funcionamento básico do sistema segue o seguinte fluxo:
+
+1. O cliente realiza o cadastro.
+2. Os dados são enviados para `/clientes`.
+3. O cliente acessa o sistema utilizando seu CPF e senha.
+4. O cliente escolhe um serviço e realiza um agendamento.
+5. O JavaScript calcula automaticamente o desconto de 10%.
+6. O agendamento é enviado para `/agendamentos`.
+7. O sistema pode consultar os agendamentos utilizando o `clienteId`.
+
+---
+
+## 7. Tecnologias
+
+* **HTML** — estrutura das páginas.
+* **CSS** — estilização e responsividade.
+* **JavaScript** — regras de negócio e comunicação com a API.
+* **JSON Server** — API REST local.
+* **db.json** — armazenamento dos dados.
