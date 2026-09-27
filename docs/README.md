@@ -1,98 +1,89 @@
-# Ultra Legacy
+# ultra-legacy-css
 
-**Aluno:** José Augusto Wennek Fiuza
+### **Autor:** [Seu Nome Aqui]
 
-Sistema web para gerenciamento de uma empresa de estética automotiva, com cadastro de clientes, veículos, serviços e agendamentos.
+Este projeto tem como objetivo implementar progressivamente e de forma didática uma aplicação web para a empresa de estética automotiva **Ultra Legacy**, focada no agendamento de serviços automotivos com desconto fidelidade aplicado automaticamente a cada operação.
 
-## 📚 Documentação
+O frontend da aplicação foi desenvolvido com HTML, CSS e JavaScript e o backend foi simulado pela implementação de uma API Fake, usando o JSON Server.
 
-* [PRD](/docs/prd.md)
-* [Architecture](/docs/architecture.md)
+## 📚 Documentação do Projeto
 
-## 🎨 Protótipo
+Para entender as regras de negócio, o escopo e a arquitetura técnica da aplicação, consulte os documentos abaixo:
 
-[Google Stitch](https://stitch.withgoogle.com/projects/17088217055424468959)
+- [📄 Product Requirements Document (PRD)](./docs/prd.md) - Visão geral, atores e histórias de usuário.
+- [🛠️ Especificação Técnica (Tech Spec)](./docs/spec.md) - Diagrama de banco de dados (DER), dicionário de dados e rotas da API (JSON Server).
 
-## 🛠️ Tecnologias
+## 🎨 Design
 
-* HTML5
-* CSS3
-* JavaScript
-* Bootstrap 5.3.3
-* Bootstrap Icons 1.11.3
-* Node.js / NPM
-* JSON Server
-* FIPE API v1
-* Git / GitHub
+- [🎨 Design System](./docs/design-system.md) - Identidade visual
+- [🖼️ Protótipo no Figma](https://www.figma.com/file/exemplo) - Telas interativas da aplicação.
 
-## 💡 Justificativa
+## 🌐 Site em Produção - GitHub Pages
 
-O **Bootstrap 5.3.3** foi escolhido por facilitar a criação de interfaces responsivas através de Grid, Flexbox e componentes prontos, como cards, botões, formulários e modais.
+https://seu-usuario.github.io/ultra-legacy-css/
 
-A **FIPE API v1** foi escolhida por fornecer dados reais de veículos e valores de referência. A consulta será realizada por **tipo, marca, modelo e ano**, complementando o cadastro dos veículos do sistema.
+## 💻 Tecnologias e Dependências
 
-A placa será armazenada no cadastro, mas não será utilizada para consulta direta na FIPE API.
+- **Framework CSS:** MaterializeCSS
+- **JavaScript:**
+  - **JQuery** - Para realizar animações e manipulação do DOM.
+  - **JSON Server** - Para simular uma API REST.
 
-## 📋 Checklist
+## ✅ Checklist | Indicadores de Desempenho (ID) dos Resultados de Aprendizagem (RA)
 
-### RA1
+#### RA1 - Utilizar Frameworks CSS para estilização de elementos HTML e criação de layouts responsivos.
 
-* [x] ID01 — Protótipo responsivo
-* [x] ID02 — Bootstrap Grid/Flexbox
-* [x] ID03 — CSS Grid/Flexbox
-* [x] ID04 — Componentes Bootstrap
+- [ ] ID 01 - Prototipa interfaces adaptáveis para no mínimo os tamanhos de tela mobile e desktop, usando ferramentas de design tradicionais (Figma, Quant UX ou Sketch) ou IA (Stitch).
+- [ ] ID 02 - Implementa layout responsivo com Framework CSS (Bootstrap, Materialize, Tailwind + DaisyUI) usando Flexbox ou Grid do próprio framework.
+- [ ] ID 03 - Implementa layout responsivo com CSS puro, usando Flexbox ou Grid Layout.
+- [ ] ID 04 - Utiliza componentes prontos de um Framework CSS (ex.: card, button) e componentes JavaScript do framework (ex.: modal, carousel).
+- [ ] ID 05 - Cria layout fluido usando unidades relativas (vw, vh, %, em, rem) no lugar de unidades fixas (px).
+- [ ] ID 06 - Aplica um Design System consistente (cores, tipografia, padrões de componentes) em toda a aplicação.
+- [ ] ID 07 - Utiliza Sass (SCSS) com ou sem framework, aplicando variáveis, mixins e funções para modularizar o código.
+- [ ] ID 08 - Aplica tipografia responsiva (media queries mobile first) ou tipografia fluida (função clamp() + unidades relativas).
+- [ ] ID 09 - Aplica técnicas de responsividade de imagens usando CSS (object-fit, containers com unidades relativas).
+- [ ] ID 10 - Otimiza imagens usando formatos modernos (WebP) e carregamento adaptativo (srcset, picture, ou parâmetros do Cloudinary).
 
-### RA2
+#### RA2 - Realizar tratamento de formulários e aplicar validações customizadas no lado cliente.
 
-* [x] ID05 — Unidades relativas
-* [x] ID06 — Design System
-* [x] ID07 — Sass/SCSS
-* [x] ID08 — Tipografia responsiva
-* [x] ID09 — `object-fit`
-* [x] ID10 — Imagens responsivas
+- [ ] ID 11 - Implementa validação HTML nativa (campos obrigatórios, tipos, limites de caracteres) com mensagens de erro/sucesso no lado cliente.
+- [ ] ID 12 - Aplica expressões regulares (REGEX) para validações customizadas (e-mail, telefone, datas, etc.)
+- [ ] ID 13 - Utiliza elementos de seleção em formulários (checkbox, radio, select) para coleta de dados.
+- [ ] ID 14 - Implementa leitura e escrita no Web Storage (localStorage/sessionStorage) para persistir dados localmente.
 
-### RA3
+#### RA3 - Aplicar ferramentas para otimização do processo de desenvolvimento web.
 
-* [x] ID11 — Validação HTML
-* [x] ID12 — REGEX
-* [x] ID13 — Select, radio e checkbox
-* [x] ID14 — LocalStorage
+- [ ] ID 15 - Configura ambiente com Node.js e NPM para gerenciamento de pacotes e dependências.
+- [ ] ID 16 - Utiliza boas práticas de versionamento no Git/GitHub (branch main ou branches específicos, uso de .gitignore).
+- [ ] ID 17 - Mantém um README.md padronizado, conforme template da disciplina, com checklist preenchido.
+- [ ] ID 18 - Organiza arquivos do projeto de forma modular, seguindo padrão de exemplo fornecido.
+- [ ] ID 19 - Configura linters e formatadores (ESLint, Prettier) para manter qualidade e padronização do código.
 
-### RA4
+#### RA4 - Aplicar bibliotecas de funções e componentes em JavaScript para aprimorar a interatividade de páginas web.
 
-* [x] ID15 — Node/NPM
-* [x] ID16 — Git/GitHub
-* [x] ID17 — README
-* [x] ID18 — Organização de pastas
-* [x] ID19 — ESLint/Prettier
-* [x] ID20 — jQuery
-* [x] ID21 — jQuery Mask
+- [ ] ID 20 - Utiliza jQuery para manipulação do DOM e interatividade (eventos, animações, manipulação de elementos)
+- [ ] ID 21 - Integra e configura um plugin jQuery relevante (ex.: jQuery Mask Plugin).
 
-### RA5
+#### RA5 - Efetuar requisições assíncronas para uma API fake e APIs públicas, permitindo a obtenção e manipulação de dados dinamicamente.
 
-* [x] ID22 — JSON Server
-* [x] ID23 — Serviços e histórico
-* [x] ID24 — FIPE API
+- [ ] ID 22 - Realiza requisições assíncronas para uma API fake (ex.: JSON Server) para persistir dados de um formulário.
+- [ ] ID 23 - Realiza requisições assíncronas para uma API fake para exibir dados na página.
+- [ ] ID 24 - Realiza requisições assíncronas para APIs públicas reais (OpenWeather, ViaCEP etc.), exibindo os dados e tratando erros.
 
-## ▶️ Execução
+## 🚀 Manual de execução
 
-```bash
-npm install
-npm run server
-```
-
-Depois, abra o projeto no navegador.
-
-## 📁 Estrutura
-
-```text
-ultra-legacy/
-├── docs/
-│   ├── prd.md
-│   └── architecture.md
-├── src/
-├── db.json
-├── package.json
-├── README.md
-└── .gitignore
-```
+- Clonar o repositório com `git clone`
+- Fazer checkout no branch `develop` que contém as modificações mais recentes
+- Abrir o projeto no editor Visual Studio Code (VS Code)
+- Abrir um terminal pelo VSCode ou qualquer terminal do seu Sistema Operacional apontando para o diretório raiz do projeto
+- Instalar as dependências contidas no `package.json`
+  - Comando: `npm i`
+- (Opcional) Instalar o JSON Server globalmente disponível em `https://www.npmjs.com/package/json-server`
+  - Comando: `npm i -g json-server`
+  - É opcional porque a dependência já vem cadastrada no arquivo `package.json` para instalação local na pasta `node_modules`
+- Executar a API Fake (JSON Server) via um dos seguintes comandos:
+  - Execução via script registrado no `package.json`: `npm run json:server:routes`
+  - Ou via Execução explícita: `json-server --watch db.json --routes routes.json`
+- O comando para execução do JSON Server deve ser applied no diretório raiz do projeto, ou seja, que contém o arquivo `db.json` e `routes.json`.
+  - Por padrão, a aplicação JSON Server executa no endereço `localhost:3000`
+- Executar o projeto frontend.
