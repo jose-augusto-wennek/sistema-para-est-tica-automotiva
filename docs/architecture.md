@@ -6,7 +6,7 @@ Este documento detalha a arquitetura técnica, o modelo de dados e os contratos 
 
 Abaixo está o Diagrama Entidade-Relacionamento (DER) que representa a estrutura do nosso "banco de dados" (`db.json`) e como as informações se conectam.
 
-```mermaid
+mermaid
 erDiagram
 CLIENTE ||--o{ AGENDAMENTO : "realiza (e ganha desconto)"
 CLIENTE {
