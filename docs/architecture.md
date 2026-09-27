@@ -1,107 +1,96 @@
-# 🛠️ Especificação Técnica — Ultra Legacy
+# 🛠️ Especificação Técnica (Tech Spec) - Ultra Legacy
 
-## 1. Modelo de Dados
+Este documento detalha a arquitetura técnica, o modelo de dados e os contratos de API (via JSON Server) necessários para o funcionamento do sistema da estética automotiva Ultra Legacy.
+
+## 1. Modelo de Dados (Diagrama ER)
+
+Abaixo está o Diagrama Entidade-Relacionamento (DER) que representa a estrutura do nosso "banco de dados" (`db.json`) e como as informações se conectam.
 
 ```mermaid
 erDiagram
-    CLIENTE ||--o{ VEICULO : possui
-    CLIENTE ||--o{ AGENDAMENTO : realiza
-    VEICULO ||--o{ AGENDAMENTO : recebe
-    SERVICO ||--o{ AGENDAMENTO : inclui
-
-    CLIENTE {
-        int id PK
-        string nome
-        string email
-    }
-
-    VEICULO {
-        int id PK
-        int cliente_id FK
-        string placa
-        string modelo
-    }
-
-    SERVICO {
-        int id PK
-        string nome
-        decimal preco
-    }
-
-    AGENDAMENTO {
-        int id PK
-        int cliente_id FK
-        int veiculo_id FK
-        int servico_id FK
-        string data
-        string status
-    }
-```
-
-## 2. Tecnologias
-
-* Bootstrap **5.3.3**
-* Bootstrap Icons **1.11.3**
-* Node.js / NPM
-* JSON Server
-* FIPE API **v1**
-* LocalStorage
-
-## 3. JSON Server
-
-Principais rotas:
-
-```text
-GET/POST /clientes
-GET/POST /veiculos
-GET /servicos
-GET/POST /agendamentos
-```
-
-Estrutura do `db.json`:
-
-```json
-{
-  "clientes": [],
-  "veiculos": [],
-  "servicos": [],
-  "agendamentos": []
+CLIENTE ||--o{ AGENDAMENTO : "realiza (e ganha desconto)"
+CLIENTE {
+string id PK "Gerado automaticamente"
+string nome
+string cpf "Usado para o login"
+string telefone
+string senha
 }
-```
+AGENDAMENTO {
+string id PK
+string clienteId FK "Vínculo com o Cliente"
+string servico "Ex: 'Polimento Técnico' ou 'Lavagem Detalhada'"
+float valorBruto
+float desconto "Calculado automaticamente (10%)"
+float valorFinal
+string data "Formato ISO (YYYY-MM-DD)"
+}
 
-## 4. FIPE API
+2. Dicionário de Dados
+Breve explicação das tabelas principais:
 
-A FIPE API será utilizada para complementar os dados dos veículos.
+Clientes: Responsável por armazenar os dados de autenticação e contato do usuário.
 
-Fluxo:
+id: Identificador único gerado pelo JSON Server (String ou Hash).
 
-```text
-Tipo → Marca → Modelo → Ano → Dados do veículo
-```
+cpf: Chave de acesso do usuário. Em um cenário real seria único, mas para o MVP não há trava estrita no banco, apenas validação no front-end.
 
-Base:
+telefone: Telefone do cliente para confirmação do serviço.
 
-```text
-https://parallelum.com.br/fipe/api/v1
-```
+Agendamentos: Registra o histórico de serviços contratados. Regra de Negócio Crítica: Todo agendamento feito pelo cliente deve calcular, via JavaScript, um valor secundário automático do tipo DESCONTO, reduzindo o valor final cobrado.
 
-Principais endpoints:
+clienteId: Chave estrangeira que vincula o agendamento ao cliente (padrão de nomenclatura exigido pelo JSON Server para rotas aninhadas).
 
-```text
-GET /carros/marcas
-GET /carros/marcas/{marcaId}/modelos
-GET /carros/marcas/{marcaId}/modelos/{modeloId}/anos
-GET /carros/marcas/{marcaId}/modelos/{modeloId}/anos/{anoId}
-```
+servico: Nome do serviço automotivo selecionado.
 
-A placa será armazenada no sistema, mas não será utilizada para consulta direta na FIPE.
+valorBruto: Valor original do serviço.
 
-## 5. LocalStorage
+desconto: Valor deduzido referente ao desconto fidelidade.
 
-Será utilizado para dados temporários, como:
+valorFinal: Valor líquido que o cliente irá pagar no final.
 
-* Última consulta;
-* Preferências;
-* Rascunhos de formulários.
+3. Rotas da API (JSON Server)
+A aplicação consome a API local simulada pelo JSON Server. Abaixo os principais endpoints:
 
-O JSON Server será o armazenamento principal durante o desenvolvimento.
+GET /clientes - Retorna a lista de clientes.
+
+POST /clientes - Cadastra um novo cliente.
+
+GET /agendamentos?clienteId=1 - Retorna os agendamentos de um cliente específico.
+
+POST /agendamentos - Cadastra um novo agendamento de serviço.
+
+4. Estrutura do Banco de Dados (db.json)
+Esta é a representação em formato JSON do banco de dados simulado. Esta estrutura serve de contexto para ferramentas de IA e para o JSON Server inicializar a API Fake.
+
+{
+  "clientes": [
+    {
+      "id": "1",
+      "nome": "João da Silva",
+      "cpf": "12345678900",
+      "telefone": "41999998888",
+      "senha": "senha_super_segura"
+    }
+  ],
+  "agendamentos": [
+    {
+      "id": "1",
+      "clienteId": "1",
+      "servico": "Polimento Técnico",
+      "valorBruto": 350.00,
+      "desconto": 35.00,
+      "valorFinal": 315.00,
+      "data": "2026-03-16"
+    },
+    {
+      "id": "2",
+      "clienteId": "1",
+      "servico": "Higienização Interna",
+      "valorBruto": 200.00,
+      "desconto": 20.00,
+      "valorFinal": 180.00,
+      "data": "2026-03-17"
+    }
+  ]
+}
