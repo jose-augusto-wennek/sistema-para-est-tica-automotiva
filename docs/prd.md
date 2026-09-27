@@ -1,6 +1,3 @@
-### 📄 3. `docs/prd.md`
-
-```markdown
 # 📄 Product Requirements Document (PRD) - Ultra Legacy
 
 ## 1. Visão Geral e Objetivo
