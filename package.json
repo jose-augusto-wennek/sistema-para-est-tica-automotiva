@@ -1,0 +1,31 @@
+{
+  "name": "projeto-da-estetica-automotiva",
+  "version": "1.0.0",
+  "description": "Sistema web para a estética automotiva **Ultra Legacy**, com cadastro de clientes e veículos, consulta automática de dados do veículo via API de placas, e gerenciamento de serviços/agendamentos.",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jose-augusto-wennek/sistema-para-est-tica-automotiva.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/jose-augusto-wennek/sistema-para-est-tica-automotiva/issues"
+  },
+  "homepage": "https://github.com/jose-augusto-wennek/sistema-para-est-tica-automotiva#readme",
+  "dependencies": {
+    "jquery": "^4.0.0",
+    "uuid": "^14.0.2"
+  },
+  "devDependencies": {
+    "gh-pages": "^6.3.0"
+  }
+}
