@@ -1,113 +1,178 @@
-# Especificação Técnica (Architecture)
+# Architecture — Ultra Legacy
 
 ## 1. Visão Geral
 
-Este documento descreve **como** o sistema da Ultra Legacy será estruturado do ponto de vista de dados, cobrindo as entidades necessárias para suportar o cadastro de clientes, veículos, serviços e agendamentos, além da integração com uma API externa de consulta de placas veiculares.
+O sistema da **Ultra Legacy** utiliza uma arquitetura simples baseada em **HTML, CSS, JavaScript e JSON Server**.
 
-## 2. Modelo de Dados (Diagrama Mermaid)
+O JSON Server funciona como uma API local para armazenar clientes e agendamentos no arquivo `db.json`.
+
+---
+
+## 2. Modelo de Dados
+
+O sistema possui duas entidades principais:
+
+* **Cliente:** armazena os dados de cadastro e acesso.
+* **Agendamento:** armazena os serviços agendados pelos clientes.
+
+### Diagrama ER
 
 ```mermaid
 erDiagram
-    CLIENTE ||--o{ VEICULO : possui
-    CLIENTE ||--o{ AGENDAMENTO : solicita
-    VEICULO ||--o{ AGENDAMENTO : eh_alvo_de
-    VEICULO ||--o{ HISTORICO_SERVICO : possui
-    SERVICO ||--o{ AGENDAMENTO : referenciado_em
-    SERVICO ||--o{ HISTORICO_SERVICO : referenciado_em
-    AGENDAMENTO ||--o| HISTORICO_SERVICO : gera
-    ADMINISTRADOR ||--o{ AGENDAMENTO : gerencia
-    CLIENTE ||--o{ MENSAGEM_CONTATO : envia
+    CLIENTE ||--o{ AGENDAMENTO : realiza
 
     CLIENTE {
         string id PK
         string nome
-        string email
-        string senha_hash
+        string cpf
         string telefone
-    }
-
-    VEICULO {
-        string id PK
-        string cliente_id FK
-        string placa
-        string marca
-        string modelo
-        string ano
-        string cor
-    }
-
-    SERVICO {
-        string id PK
-        string nome
-        string descricao
-        float preco
+        string senha
     }
 
     AGENDAMENTO {
         string id PK
-        string cliente_id FK
-        string veiculo_id FK
-        string servico_id FK
-        string data_hora
-        string status
-    }
-
-    HISTORICO_SERVICO {
-        string id PK
-        string veiculo_id FK
-        string servico_id FK
-        string agendamento_id FK
-        string data_conclusao
-        string observacoes
-    }
-
-    ADMINISTRADOR {
-        string id PK
-        string nome
-        string email
-        string senha_hash
-    }
-
-    MENSAGEM_CONTATO {
-        string id PK
-        string cliente_id FK
-        string nome
-        string email
-        string mensagem
-        string data_envio
+        string clienteId FK
+        string servico
+        float valorBruto
+        float desconto
+        float valorFinal
+        string data
     }
 ```
 
-## 3. Entidades e Relações (resumo)
+---
 
-- **CLIENTE**: usuário final que possui uma ou mais entradas em VEICULO e pode solicitar AGENDAMENTOs.
-- **VEICULO**: pertence a um CLIENTE; os campos `marca`, `modelo`, `ano` e `cor` são preenchidos automaticamente a partir da consulta da `placa` na API externa, mas ficam salvos no banco para não depender de nova chamada a cada visualização.
-- **SERVICO**: catálogo de serviços oferecidos pela estética (lavagem, polimento, vitrificação, etc.), com preço.
-- **AGENDAMENTO**: liga um CLIENTE + VEICULO + SERVICO em uma data/hora, com um `status` (ex: pendente, confirmado, concluído, cancelado).
-- **HISTORICO_SERVICO**: registro definitivo de um serviço já realizado em um veículo, geralmente criado a partir de um AGENDAMENTO concluído.
-- **ADMINISTRADOR**: usuário interno que gerencia agendamentos, clientes e veículos.
-- **MENSAGEM_CONTATO**: mensagens enviadas pelo formulário de contato do site institucional.
+## 3. Dicionário de Dados
 
-## 4. Integração com API de Placas Veiculares
+### Cliente
 
-- Ao cadastrar um veículo, o usuário informa apenas a **placa**.
-- O sistema faz uma requisição a uma API pública/paga de consulta veicular (ex: serviços que consultam a base do Detran/Denatran a partir da placa) para obter `marca`, `modelo`, `ano` e `cor`.
-- O retorno da API é usado para **preencher automaticamente** os campos de VEICULO antes de salvar no banco.
-- Deve-se tratar o caso de a API não encontrar a placa (placa inválida, veículo não localizado) ou de a API estar indisponível — nesses casos, o Cliente/Administrador poderá preencher os dados manualmente.
+| Campo      | Descrição                                       |
+| ---------- | ----------------------------------------------- |
+| `id`       | Identificador único do cliente.                 |
+| `nome`     | Nome completo do cliente.                       |
+| `cpf`      | CPF utilizado para acesso ao sistema.           |
+| `telefone` | Telefone para contato e confirmação do serviço. |
+| `senha`    | Senha utilizada no acesso.                      |
 
+### Agendamento
 
-## 5. Persistência de Dados (Fake API)
+| Campo        | Descrição                                                   |
+| ------------ | ----------------------------------------------------------- |
+| `id`         | Identificador único do agendamento.                         |
+| `clienteId`  | Identifica o cliente responsável pelo agendamento.          |
+| `servico`    | Serviço automotivo escolhido.                               |
+| `valorBruto` | Valor original do serviço.                                  |
+| `desconto`   | Valor do desconto de fidelidade, calculado automaticamente. |
+| `valorFinal` | Valor final após a aplicação do desconto.                   |
+| `data`       | Data do agendamento no formato `YYYY-MM-DD`.                |
 
-Enquanto não há um backend real, as entidades **CLIENTE**, **VEICULO**, **SERVICO** e **AGENDAMENTO** serão persistidas usando o **JSON Server** como API fake, rodando localmente a partir de um arquivo `db.json` com uma coleção para cada entidade (ex.: `/clientes`, `/veiculos`, `/servicos`, `/agendamentos`).
+### Regra de negócio
 
-- Cadastro de cliente e de veículo → `POST` para o JSON Server (grava o formulário).
-- Listagem de veículos, serviços e agendamentos → `GET` no JSON Server (exibe os dados na página).
-- Consulta de placa → `GET` para a **API pública real** de placas veiculares (dado externo, não fica no JSON Server).
+Todo agendamento realizado pelo cliente possui um **desconto automático de 10%**.
 
-## 6. Uso de Web Storage (localStorage)
+O JavaScript calcula o desconto e o valor final:
 
-Para melhorar a experiência sem depender do backend, alguns dados de baixo risco ficam salvos no `localStorage` do navegador, por exemplo:
+```text
+desconto = valorBruto × 10%
+valorFinal = valorBruto - desconto
+```
 
-- Última placa pesquisada pelo usuário (para preencher automaticamente o campo na próxima visita).
-- Preferências de exibição (ex.: tema claro/escuro, se implementado).
-- Rascunho do formulário de agendamento, evitando perda de dados caso a página seja recarregada antes do envio.
+---
+
+## 4. API — JSON Server
+
+A aplicação utiliza o **JSON Server** para simular uma API REST local.
+
+### Clientes
+
+```http
+GET /clientes
+```
+
+Retorna todos os clientes.
+
+```http
+POST /clientes
+```
+
+Cadastra um novo cliente.
+
+### Agendamentos
+
+```http
+GET /agendamentos?clienteId=1
+```
+
+Retorna os agendamentos de um cliente específico.
+
+```http
+POST /agendamentos
+```
+
+Cadastra um novo agendamento.
+
+---
+
+## 5. Banco de Dados
+
+Os dados são armazenados no arquivo `db.json`.
+
+Exemplo:
+
+```json
+{
+  "clientes": [
+    {
+      "id": "1",
+      "nome": "João da Silva",
+      "cpf": "12345678900",
+      "telefone": "41999998888",
+      "senha": "senha_super_segura"
+    }
+  ],
+  "agendamentos": [
+    {
+      "id": "1",
+      "clienteId": "1",
+      "servico": "Polimento Técnico",
+      "valorBruto": 350.00,
+      "desconto": 35.00,
+      "valorFinal": 315.00,
+      "data": "2026-03-16"
+    },
+    {
+      "id": "2",
+      "clienteId": "1",
+      "servico": "Higienização Interna",
+      "valorBruto": 200.00,
+      "desconto": 20.00,
+      "valorFinal": 180.00,
+      "data": "2026-03-17"
+    }
+  ]
+}
+```
+
+---
+
+## 6. Fluxo da Aplicação
+
+O funcionamento básico do sistema segue o seguinte fluxo:
+
+1. O cliente realiza o cadastro.
+2. Os dados são enviados para `/clientes`.
+3. O cliente acessa o sistema utilizando seu CPF e senha.
+4. O cliente escolhe um serviço e realiza um agendamento.
+5. O JavaScript calcula automaticamente o desconto de 10%.
+6. O agendamento é enviado para `/agendamentos`.
+7. O sistema pode consultar os agendamentos utilizando o `clienteId`.
+
+---
+
+## 7. Tecnologias
+
+* **HTML** — estrutura das páginas.
+* **CSS** — estilização e responsividade.
+* **JavaScript** — regras de negócio e comunicação com a API.
+* **JSON Server** — API REST local.
+* **db.json** — armazenamento dos dados.
