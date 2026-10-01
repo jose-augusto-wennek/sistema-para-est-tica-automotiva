@@ -10,21 +10,20 @@ O frontend da aplicação foi desenvolvido com HTML, CSS e JavaScript e o backen
 
 Para entender as regras de negócio, o escopo e a arquitetura técnica da aplicação, consulte os documentos abaixo:
 
-- [📄 Product Requirements Document (PRD)](./docs/prd.md) - Visão geral, atores e histórias de usuário.
-- [🛠️ Especificação Técnica (Tech Spec)](./docs/spec.md) - Diagrama de banco de dados (DER), dicionário de dados e rotas da API (JSON Server).
+- [📄 Product Requirements Document (PRD)](https://github.com/jose-augusto-wennek/sistema-para-est-tica-automotiva/blob/main/docs/prd.md) - Visão geral, atores e histórias de usuário.
+- [🛠️ Especificação Técnica (architecture)](https://github.com/jose-augusto-wennek/sistema-para-est-tica-automotiva/blob/main/docs/architecture.md) - Diagrama de banco de dados (DER), dicionário de dados e rotas da API (JSON Server).
 
 ## 🎨 Design
 
-- [🎨 Design System](./docs/design-system.md) - Identidade visual
-- [🖼️ Protótipo no Figma](https://www.figma.com/file/exemplo) - Telas interativas da aplicação.
+- [🖼️ Protótipo no Figma](https://stitch.withgoogle.com/projects/17088217055424468959) - Telas interativas da aplicação.
 
 ## 🌐 Site em Produção - GitHub Pages
 
-https://seu-usuario.github.io/ultra-legacy-css/
+https://github.com/jose-augusto-wennek/sistema-para-est-tica-automotiva
 
 ## 💻 Tecnologias e Dependências
 
-- **Framework CSS:** MaterializeCSS
+- **Framework CSS:** bootstrap
 - **JavaScript:**
   - **JQuery** - Para realizar animações e manipulação do DOM.
   - **JSON Server** - Para simular uma API REST.
